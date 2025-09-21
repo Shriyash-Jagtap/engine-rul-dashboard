@@ -239,8 +239,18 @@ export default function Home() {
     if (!currentPrediction) return { status: 'unknown', color: 'gray' };
     
     const rul = currentPrediction.rul_prediction;
-    if (rul > 50) return { status: 'healthy', color: 'green' };
-    if (rul > 20) return { status: 'warning', color: 'yellow' };
+    const anomaly = currentPrediction.anomaly_detected;
+    
+    // If anomaly detected, always show critical or warning
+    if (anomaly) {
+      if (rul < 50) return { status: 'critical', color: 'red' };
+      return { status: 'warning', color: 'yellow' };
+    }
+    
+    // Normal status based on RUL thresholds
+    if (rul > 100) return { status: 'healthy', color: 'green' };
+    if (rul > 60) return { status: 'good', color: 'blue' };
+    if (rul > 30) return { status: 'warning', color: 'yellow' };
     return { status: 'critical', color: 'red' };
   };
 
